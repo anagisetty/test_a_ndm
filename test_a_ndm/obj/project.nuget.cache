@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "s8jGg3RjV8VHL2cPVXdC94SvO+jV7tx9+ufBhyy4/v6fpFa9eI2B7CpZ2AVw9lJr/ai4XKGV8E2Rs+WuJ47kJw==",
+  "dgSpecHash": "Tl21+t6ORqHfnuxdPh9n7eos+vg6vmbcIPhf1Va/6gfATcNl05yNJLt4mW9SZFyPYw7Skqxc61lCKLHrmxE9mA==",
   "success": true,
-  "projectFilePath": "D:\\Projects\\Microsoft\\API\\dotnet_service\\Application.API\\SacralAI.Code.Scheduler\\bin\\Debug\\Apps\\1\\58\\202304194606\\test_a_ndm\\test_a_ndm.csproj",
+  "projectFilePath": "D:\\Projects\\Microsoft\\API\\dotnet_service\\Application.API\\SacralAI.Code.Scheduler\\bin\\Debug\\Apps\\1\\58\\202304194753\\test_a_ndm\\test_a_ndm.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.4\\microsoft.aspnetcore.openapi.7.0.4.nupkg.sha512",
     "C:\\Users\\DELL\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
