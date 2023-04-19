@@ -1,45 +1,106 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 using System.Web.Http;
-using Test_A_NDM.Models;
-using Test_A_NDM.Services;
+using test_a_ndm.Models;
 
-namespace Test_A_NDM.Controllers
+namespace test_a_ndm.Controllers
 {
     public class ForgotPasswordController : ApiController
     {
-        private readonly IForgotPasswordService _forgotPasswordService;
-
-        public ForgotPasswordController(IForgotPasswordService forgotPasswordService)
+        [HttpPost]
+        [Route("forgotpassword")]
+        public async Task<HttpResponseMessage> ForgotPassword(User user)
         {
-            _forgotPasswordService = forgotPasswordService;
+            try
+            {
+                //Check if user exists
+                if(UserExists(user.Email))
+                {
+                    // Generate Password Reset Token
+                    string token = GeneratePasswordResetToken();
+                    // Set Reset Token in DB
+                    await SetPasswordResetTokenInDB(user.Email, token);
+                    // Send Email with Password Reset Link
+                    await SendPasswordResetLink(user.Email, token);
+                    return Request.CreateResponse(HttpStatusCode.OK, "Password Reset Link sent to your email");
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "User doesn't exists");
+                }
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpPost]
-        [Route("~/api/forgotpassword/reset")]
-        public IHttpActionResult ResetPassword(ForgotPassword model)
+        [Route("resetpassword")]
+        public async Task<HttpResponseMessage> ResetPassword(ResetPassword resetPassword)
         {
-            if (model == null)
+            try
             {
-                return BadRequest("No data found");
+                // Verify Password Reset Token
+                if (await VerifyPasswordResetToken(resetPassword.Email, resetPassword.Token))
+                {
+                    // Set New Password
+                    await SetNewPassword(resetPassword.Email, resetPassword.NewPassword);
+                    return Request.CreateResponse(HttpStatusCode.OK, "Password Updated Successfully");
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid Token");
+                }
             }
-
-            if (!ModelState.IsValid)
+            catch (Exception ex)
             {
-                return BadRequest(ModelState);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex.Message);
             }
+        }
 
-            bool isSuccess = _forgotPasswordService.ResetPassword(model);
+        // Check if user exists
+        public bool UserExists(string email)
+        {
+            // Code to check if user exists
+            return true;
+        }
 
-            if (!isSuccess)
-            {
-                return InternalServerError();
-            }
+        // Generate Password Reset Token 
+        public string GeneratePasswordResetToken()
+        {
+            // Code to generate random string for token
+            return "Token123";
+        }
 
-            return Ok();
+        // Set Password Reset Token in DB
+        public async Task<bool> SetPasswordResetTokenInDB(string email, string token)
+        {
+            // Code to save token in DB
+            return true;
+        }
+
+        // Send Email with Password Reset Link
+        public async Task SendPasswordResetLink(string email, string token)
+        {
+            // Code to send password reset link
+        }
+
+        // Verify Password Reset Token
+        public async Task<bool> VerifyPasswordResetToken(string email, string token)
+        {
+            // Code to verify token
+            return true;
+        }
+
+        // Set new Password
+        public async Task<bool> SetNewPassword(string email, string newPassword)
+        {
+            // Code to set new password
+            return true;
         }
     }
 }
