@@ -1,74 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using test_a_ndm.Services;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using Test_A_NDM.Models;
+using Test_A_NDM.Services;
 
-namespace test_a_ndm.Controllers
+namespace Test_A_NDM.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class ForgotPasswordController : ControllerBase
+    public class ForgotPasswordController : ApiController
     {
-        private readonly IConfiguration _configuration;
-        private readonly IUserService _userService;
+        private readonly IForgotPasswordService _forgotPasswordService;
 
-        public ForgotPasswordController(IConfiguration configuration, IUserService userService)
+        public ForgotPasswordController(IForgotPasswordService forgotPasswordService)
         {
-            _configuration = configuration;
-            _userService = userService;
+            _forgotPasswordService = forgotPasswordService;
         }
 
-        /// <summary>
-        /// Generates forgot password token and sends it to the given email address
-        /// </summary>
-        /// <param name="email"></param>
-        /// <returns></returns>
         [HttpPost]
-        [Route("GenerateForgotPasswordToken")]
-        public async Task<IActionResult> GenerateForgotPasswordToken(string email)
+        [Route("~/api/forgotpassword/reset")]
+        public IHttpActionResult ResetPassword(ForgotPassword model)
         {
-            try
+            if (model == null)
             {
-                var resetToken = await _userService.GenerateForgotPasswordToken(email);
-                if (string.IsNullOrEmpty(resetToken))
-                    return NotFound("No user found with the given email address.");
-
-                //Send forgot password reset token email
-                await _userService.SendForgotPasswordResetTokenEmail(email, resetToken);
-
-                return Ok();
+                return BadRequest("No data found");
             }
-            catch (Exception ex)
+
+            if (!ModelState.IsValid)
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(ModelState);
             }
-        }
 
-        /// <summary>
-        /// Resets the user's password with the given token and new password
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("ResetPassword")]
-        public async Task<IActionResult> ResetPassword(string token, string password)
-        {
-            try
-            {
-                var resetSuccessful = await _userService.ResetPassword(token, password);
-                if (!resetSuccessful)
-                    return BadRequest("Failed to reset password.");
+            bool isSuccess = _forgotPasswordService.ResetPassword(model);
 
-                return Ok();
-            }
-            catch (Exception ex)
+            if (!isSuccess)
             {
-                return StatusCode(500, ex.Message);
+                return InternalServerError();
             }
+
+            return Ok();
         }
     }
 }
